@@ -38,7 +38,7 @@ docker run -d \
   --device /dev/bus/usb:/dev/bus/usb \
   -p 631:631 -p 8190:8190 \
   -e CUPS_ADMIN_USER=printer -e CUPS_ADMIN_PASSWORD=printer \
-  rma945/mb1500-mfp:latest
+  ghcr.io/rma945/mb1500-mfp:v1.0.0
 ```
 
 ### Volumes and Configuration
