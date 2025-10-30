@@ -1,0 +1,34 @@
+#!/usr/bin/with-contenv bash
+
+NODE_ENV=production
+
+SCANSERVER_USER=scanserver
+SCANSERVER_GROUP=scanserver
+SCANSERVER_BASE_DIR='/opt/scanserver'
+
+DEVICES_FILE_PATH="${SCANSERVER_BASE_DIR}/data/devices.json"
+
+USB_DEVICE_ID=$(lsusb | grep -i ${SANE_DEVICE_NAME} | awk '{gsub(":", "", $4); printf "%s:%s\n",$2,$4}')
+SANE_DEVICE_ID="panamfs:libusb:${USB_DEVICE_ID}"
+
+# create base data folder structure
+mkdir -p ${SCANSERVER_BASE_DIR}/data/{output,preview,temp,thumbnail}
+chown ${SCANSERVER_USER}:${SCANSERVER_GROUP} ${SCANSERVER_BASE_DIR}/data/{output,preview,temp,thumbnail}
+
+# prevent changes at devices.json
+cp ${SCANSERVER_BASE_DIR}/devices.json ${SCANSERVER_BASE_DIR}/data/
+chown root:root ${DEVICES_FILE_PATH}
+chown root:root ${SCANSERVER_BASE_DIR}/data/
+
+# set usb device id
+sed -i "s/SANE_DEVICE_ID/${SANE_DEVICE_ID}/g" ${DEVICES_FILE_PATH}
+
+# scanservjs: skip search for any new scan devices
+SCANIMAGE_LIST_IGNORE=true
+
+# scanservjs: set single device
+DEVICES="${SANE_DEVICE_ID}"
+
+cd ${SCANSERVER_BASE_DIR}
+
+s6-setuidgid ${SCANSERVER_USER} node ./server/server.js
