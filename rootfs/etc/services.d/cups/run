@@ -1,0 +1,6 @@
+#!/usr/bin/with-contenv sh
+
+# create cups admin user
+useradd -G lpadmin -s /bin/false -r ${CUPS_ADMIN_USER} -p $(openssl passwd -6 "${CUPS_ADMIN_PASSWORD}")
+
+/usr/sbin/cupsd -l
