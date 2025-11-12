@@ -1,0 +1,14 @@
+#!/usr/bin/with-contenv bash
+
+# create cups admin user
+if getent passwd $1 > /dev/null 2>&1; then
+    echo "Updating CUPS admin user ${CUPS_ADMIN_USER} password"
+    PASSWD=$(openssl passwd -6 "${CUPS_ADMIN_PASSWORD}")
+    echo -e "${PASSWD}\n${PASSWD}" | passwd ${CUPS_ADMIN_USER}
+else
+    echo "Creating CUPS admin user ${CUPS_ADMIN_USER} password"
+    useradd -G lpadmin -s /bin/false -r ${CUPS_ADMIN_USER} -p 
+fi
+
+echo "starting cupsd"
+/usr/sbin/cupsd -f

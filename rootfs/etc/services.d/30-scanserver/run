@@ -31,4 +31,5 @@ DEVICES="${SANE_DEVICE_ID}"
 
 cd ${SCANSERVER_BASE_DIR}
 
+echo "starting scanserver"
 s6-setuidgid ${SCANSERVER_USER} node ./server/server.js

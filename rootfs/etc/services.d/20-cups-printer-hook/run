@@ -1,0 +1,17 @@
+#!/usr/bin/with-contenv bash
+
+s6-svwait -u /var/run/s6/services/10-cups
+sleep 30
+
+# add printer to cups
+if [[ ! -z ${PRINTER_URI} ]]; then
+    if lpstat -p "$PRINTER_NAME" >/dev/null 2>&1; then
+        echo "Printer '$PRINTER_NAME' already added.."
+    else
+        lpadmin -p "${PRINTER_NAME}" -E -v "${PRINTER_URI}" -P "${PRINTER_PPD}"
+        cupsctl --share-printers
+        echo "Adding printer '$PRINTER_NAME'"
+    fi
+fi
+
+s6-pause -th
