@@ -46,14 +46,17 @@ RUN apt update &&\
     mkdir -p /opt/node && curl -kL ${NODEJS_URL} | tar --strip-components=1 -xJvf - -C /opt/node/ &&\
 
     ### cleanup
-   /src/cleanup.sh && rm -rf /src/ && apt clean
+  /src/cleanup.sh && rm -rf /src/ && apt clean
 
 COPY rootfs /
 
 ENV PATH=/opt/node/bin:$PATH \
     SANE_DEVICE_NAME='KX-MB1500' \
     CUPS_ADMIN_USER='printer' \
-    CUPS_ADMIN_PASSWORD='printer'
+    CUPS_ADMIN_PASSWORD='printer' \
+    PRINTER_NAME="Panasonic_KX-MB1500" \
+    PRINTER_PPD="/usr/share/cups/model/panasonic/L_Panasonic-MB1500-gdi.ppd" \
+    PRINTER_URI="usb://Panasonic/KX-MB1500?serial=1234567890&interface=1"
 
 EXPOSE 8190/tcp \
        631/tcp \

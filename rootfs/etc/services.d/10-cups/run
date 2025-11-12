@@ -1,0 +1,11 @@
+#!/usr/bin/with-contenv bash
+
+if getent passwd "${CUPS_ADMIN_USER}" > /dev/null 2>&1; then
+  userdel "${CUPS_ADMIN_USER}" --force --remove
+fi
+
+echo "Updating CUPS admin user ${CUPS_ADMIN_USER} password"
+useradd -G lpadmin -s /bin/false -r ${CUPS_ADMIN_USER} -p $(openssl passwd -6 "${CUPS_ADMIN_PASSWORD}")
+
+echo "starting cupsd"
+/usr/sbin/cupsd -f
