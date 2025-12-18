@@ -1,0 +1,18 @@
+#!/usr/bin/with-contenv bash
+
+SLEEP_DELAY=300
+
+SCANSERVER_BASE_DIR='/opt/scanserver'
+DEVICES_FILE_PATH="${SCANSERVER_BASE_DIR}/data/devices.json"
+SANE_DEVICE_PREFIX="panamfs:libusb"
+
+LAST_USB_DEVICE_ID=$(lsusb | grep -i ${SANE_DEVICE_NAME} | awk '{gsub(":", "", $4); printf "%s:%s\n",$2,$4}')
+
+while true; do
+  sleep ${SLEEP_DELAY}
+  CURRENT_USB_DEVICE_ID=$(lsusb | grep -i ${SANE_DEVICE_NAME} | awk '{gsub(":", "", $4); printf "%s:%s\n",$2,$4}')
+  if [[ "${CURRENT_USB_DEVICE_ID}" !=  "${LAST_USB_DEVICE_ID}" ]];then
+    echo "USB device id changed: last:${LAST_USB_DEVICE_ID} new:${CURRENT_USB_DEVICE_ID}"
+    sed -i "s/${SANE_DEVICE_PREFIX}:${LAST_USB_DEVICE_ID}/${SANE_DEVICE_PREFIX}:${CURRENT_USB_DEVICE_ID}/g" ${DEVICES_FILE_PATH}
+  fi
+done
